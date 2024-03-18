@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'commander'
+require_relative '../lib/webpage_analyzer'
+
+class AnalyzeWebpage
+  include Commander::Methods
+
+  def run
+    program :name, 'Webpage Analyzer'
+    program :version, '0.1.0'
+    program :description, 'Analyzes webpage content.'
+
+    command :top_words do |c|
+      c.syntax = 'analyze URL [OPTIONS]'
+      c.summary = 'Analyzes the top words used in a webpage.'
+      c.description = 'Fetches the webpage at the given URL and prints the top N words by frequency.'
+      c.option '--limit INTEGER', Integer, 'Limit the number of words to analyze (default: 25)'
+      c.action do |args, options|
+        options.default(limit: 25)
+        url = args.shift
+        if url.nil?
+          say 'Error: URL not provided.'
+          say c.syntax
+          exit 1
+        end
+        say WebpageAnalyzer.top_words(url, options.limit)
+      end
+    end
+
+    run!
+  end
+end
+
+AnalyzeWebpage.new.run
